@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<Head>
+    <meta charset="UTF-8">
+</Head>
+<body>
+<div class="container">
+    <h2>내 정보 보기</h2>
+    <hr>
+    <div>
+        <p><strong>아이디:</strong> <span th:text="${member.loginId}">test</span></p>
+        <p><strong>이름:</strong> <span th:text="${member.name}">홍길동</span></p>
+        <p><strong>권한:</strong> <span th:text="${member.role}">USER</span></p>
+    </div>
+    <hr>
+    <form th:action="@{/members/edit}" method="get" class="d-flex align-items-center gap-2">
+        <input type="password" name="password" placeholder="비밀번호 입력" required
+               style="font-size: 0.85rem; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+        <button type="submit" class="btn btn-sm btn-primary">내 정보 수정</button>
+    </form>
+
+    <hr>
+    <form th:action="@{/members/withdraw}" method="post">
+        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('정말 탈퇴하시겠습니까?')">회원 탈퇴</button>
+    </form>
+    <a th:href="@{/posts}" class="btn btn-secondary">홈으로</a>
+</div>
+</body>
+</html>
