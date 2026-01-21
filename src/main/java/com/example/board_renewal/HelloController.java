@@ -1,11 +1,12 @@
 package com.example.board_renewal;
 
-import lombok.RequiredArgsConstructor; // 추가
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -16,6 +17,8 @@ import java.util.List;
 public class HelloController {
 
     private final PostRepository postRepository; // 2. DB 연결 도구 선언 (ArrayList 삭제!)
+    private final LikeService likeService;
+    private final LikeRepository likeRepository;
 
     @GetMapping("/posts")
     public String getPosts(Model model) {
@@ -68,21 +71,32 @@ public class HelloController {
         return "redirect:/posts";
     }
     @GetMapping("/posts/detail")
-    public String postDetail(@RequestParam("id") Long id, Model model) {
+    public String postDetail(@RequestParam("id") Long id, HttpSession session, Model model) {
+        // 1. DB에서 게시글 조회
         Post post = postRepository.findById(id).orElse(null);
 
-        if (post != null) {
-            // [핵심] 조회수 1 증가
-            post.setViewCount(post.getViewCount() + 1);
-
-            // [중요] 변경된 조회수를 DB에 다시 저장
-            postRepository.save(post);
-
-            model.addAttribute("post", post);
-            return "post-detail";
+        if (post == null) {
+            return "redirect:/posts"; // 글 없으면 목록으로
         }
 
-        return "redirect:/posts"; // 글이 없으면 목록으로
+        // 2. 조회수 증가 로직 (기존에 있던 것 유지)
+        post.setViewCount(post.getViewCount() + 1);
+        postRepository.save(post); // DB 반영
+
+        // 3. 좋아요 여부 확인 (아까 만든 로직 합치기)
+        boolean isLiked = false;
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember != null) {
+            isLiked = likeService.isLiked(loginMember.getId(), id);
+        }
+        long likeCount = likeRepository.countByPost(post);
+
+        model.addAttribute("post", post);
+        model.addAttribute("isLiked", isLiked);
+        model.addAttribute("likeCount", likeCount);
+
+        // 4. 파일명 정확히 리턴
+        return "post-detail";
     }
 
     // 1. 수정 화면 띄우기
@@ -102,4 +116,5 @@ public class HelloController {
         postRepository.save(post); // DB에 업데이트 (ID가 같으면 덮어쓰기 됩니다)
         return "redirect:/posts";
     }
+
 }
