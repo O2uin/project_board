@@ -79,7 +79,7 @@
         <input type="hidden" name="id" th:value="${post.id}">
 
         <input type="text" name="title" class="form-control input-title"
-               th:value="${post.title}" placeholder="제목을 입력하세요" required>
+               th:value="${post.title}" placeholder="제목을 입력하세요" maxlength="50" required>
 
         <div style="margin-bottom: 20px;">
         <textarea name="content" placeholder="내용을 입력하세요..." th:text="${post.content}"
@@ -95,7 +95,8 @@
                     나가기
                 </a>
                 <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #f1f3f5; padding-top: 20px;">
-                    <button type="submit" style="background: #212529; color: white; border: none; padding: 10px 25px; border-radius: 4px; font-weight: 500; cursor: pointer;">
+                    <button type="submit" id="submitBtn"
+                            style="background: #212529; color: white; border: none; padding: 10px 25px; border-radius: 4px; font-weight: 500; cursor: pointer;">
                         수정완료
                     </button>
                 </div>
@@ -103,6 +104,30 @@
         </div>
     </form>
 </div>
+<script>
+    const contentArea = document.querySelector('textarea[name="content"]');
+    const submitBtn = document.getElementById('submitBtn');
+    const LIMIT = 2000;
 
+    contentArea.addEventListener('input', function() {
+        const length = contentArea.value.length;
+
+        if (length > LIMIT) {
+            // 글자 수 초과 시: 버튼을 아주 연한 회색으로
+            submitBtn.disabled = true;
+            submitBtn.style.background = "#e9ecef";
+            submitBtn.style.color = "#adb5bd";
+            submitBtn.style.cursor = "not-allowed";
+            submitBtn.innerText = "분량 초과";
+        } else {
+            // 정상 상태: 다시 블랙 톤으로
+            submitBtn.disabled = false;
+            submitBtn.style.background = "#212529";
+            submitBtn.style.color = "white";
+            submitBtn.style.cursor = "pointer";
+            submitBtn.innerText = "수정완료";
+        }
+    });
+</script>
 </body>
 </html>

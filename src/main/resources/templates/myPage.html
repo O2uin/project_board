@@ -1,29 +1,169 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<Head>
+<head>
     <meta charset="UTF-8">
-</Head>
+    <title>내 정보 보기</title>
+    <style>
+        body {
+            background-color: #f1f3f5;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 420px;
+        }
+        h2 {
+            margin: 0 0 25px 0;
+            font-size: 22px;
+            font-weight: 800;
+            text-align: center;
+            color: #1a1a1a;
+        }
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #eee;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f3f5;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .label { color: #868e96; font-weight: 500; font-size: 14px; }
+        .value { color: #212529; font-weight: 700; font-size: 14px; }
+
+        .role-badge {
+            background: #e9ecef;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #495057;
+        }
+
+        /* 수정 폼 가로 배치 */
+        .edit-section {
+            margin-top: 20px;
+        }
+        .edit-form-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        input[type="password"] {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="password"]:focus {
+            border-color: #1a1a1a;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            border: none;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: #1a1a1a;
+            color: white;
+        }
+        .btn-primary:hover { background: #333; }
+
+        /* 하단 정렬 */
+        .footer-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f3f5;
+        }
+        .btn-withdraw {
+            background: none;
+            color: #adb5bd;
+            border: none;
+            font-size: 12px;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .btn-withdraw:hover { color: #fa5252; }
+
+        .btn-home {
+            color: #495057;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .btn-home:hover { text-decoration: underline; }
+    </style>
+</head>
 <body>
+
 <div class="container">
     <h2>내 정보 보기</h2>
-    <hr>
-    <div>
-        <p><strong>아이디:</strong> <span th:text="${member.loginId}">test</span></p>
-        <p><strong>이름:</strong> <span th:text="${member.name}">홍길동</span></p>
-        <p><strong>권한:</strong> <span th:text="${member.role}">USER</span></p>
-    </div>
-    <hr>
-    <form th:action="@{/members/edit}" method="get" class="d-flex align-items-center gap-2">
-        <input type="password" name="password" placeholder="비밀번호 입력" required
-               style="font-size: 0.85rem; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
-        <button type="submit" class="btn btn-sm btn-primary">내 정보 수정</button>
-    </form>
 
-    <hr>
-    <form th:action="@{/members/withdraw}" method="post">
-        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('정말 탈퇴하시겠습니까?')">회원 탈퇴</button>
-    </form>
-    <a th:href="@{/posts}" class="btn btn-secondary">홈으로</a>
+    <div class="info-box">
+        <div class="info-row">
+            <span class="label">아이디</span>
+            <span class="value" th:text="${member.loginId}">test</span>
+        </div>
+        <div class="info-row">
+            <span class="label">이름</span>
+            <span class="value" th:text="${member.name}">홍길동</span>
+        </div>
+        <div class="info-row">
+            <span class="label">회원 등급</span>
+            <span class="value role-badge"
+                  th:text="${member.role.toString() == 'USER' ? '일반 멤버' : '관리자'}">일반 멤버</span>
+        </div>
+        <div class="info-row">
+            <span class="label">가입일</span>
+            <span class="value"
+                  th:text="${member.createdDate != null ? #temporals.format(member.createdDate, 'yyyy.MM.dd') : '정보 없음'}">2024.01.01</span>
+        </div>
+    </div>
+
+    <div class="edit-section">
+        <p style="font-size: 12px; color: #868e96; margin: 0 0 8px 4px;">수정하려면 비밀번호를 입력하세요</p>
+        <form th:action="@{/members/edit}" method="get" class="edit-form-row">
+            <input type="password" name="password" placeholder="비밀번호" required>
+            <button type="submit" class="btn btn-primary">수정</button>
+        </form>
+    </div>
+
+    <div class="footer-actions">
+        <form th:action="@{/members/withdraw}" method="post">
+            <button type="submit" class="btn-withdraw"
+                    onclick="return confirm('정말 탈퇴하시겠습니까? 모든 정보가 사라집니다.')">회원 탈퇴</button>
+        </form>
+        <a th:href="@{/posts}" class="btn-home">홈으로 돌아가기</a>
+    </div>
 </div>
+
 </body>
 </html>

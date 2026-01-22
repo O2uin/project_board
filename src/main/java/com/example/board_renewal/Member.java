@@ -1,5 +1,6 @@
 package com.example.board_renewal;
 import jakarta.persistence.*; // 패키지 임포트 체크!
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,7 @@ public class Member {
     private String loginId;
     private String password;
     private String name;
+    private LocalDateTime createdDate;//가입일
 
-    private String role = "USER"; // 아까 정한 기본값!
+    private String role = "USER"; //기본값 일반회원
 }

@@ -4,6 +4,7 @@ import com.example.board_renewal.Member;
 import com.example.board_renewal.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 
 import java.util.Optional;
 
@@ -25,6 +26,8 @@ public class MemberService {
                 .ifPresent(m -> {
                     throw new IllegalStateException("이미 존재하는 아이디입니다.");
                 });
+
+        member.setCreatedDate(LocalDateTime.now());//가입일
 
         memberRepository.save(member);
         return member.getId();

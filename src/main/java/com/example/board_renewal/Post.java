@@ -19,10 +19,15 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 3. 번호를 자동으로 1, 2, 3... 올려줍니다.
     private Long id;
 
+    @Column(length = 500)
     private String title;
+
+    @Column(columnDefinition = "TEXT")
     private String content;
+
     private String author; // 작성자
     private Long memberId; // 작성자 id
+    
     @Column(nullable = false, columnDefinition = "integer default 0")
     private int viewCount = 0;//조회수
     @Column(nullable = false, columnDefinition = "integer default 0")
